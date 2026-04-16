@@ -1,0 +1,93 @@
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MaxPipe } from './max.pipe';
+export interface Point {
+  x: number;
+  y: number;
+}
+@Component({
+  selector: 'app-root',
+  imports: [RouterOutlet, CommonModule, MaxPipe],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss',
+})
+export class AppComponent implements OnInit {
+  protected points: Point[] = [
+    { x: 10, y: 20 },
+    { x: 30, y: 40 },
+    { x: 50, y: 10 },
+    { x: 70, y: 60 },
+    { x: 90, y: 30 },
+  ];
+  //
+  ticks: number[] = [];
+  labelTicks: number[] = [];
+  markTicks: number[] = [];
+
+  ngOnInit() {
+    // каждые 5px
+    for (let i = 0; i <= 368; i += 7.36) {
+      this.ticks.push(i);
+    }
+
+    for (let i = 36.8; i <= 368; i += 36.8) {
+      this.markTicks.push(i);
+    }
+
+    // подписи реже (каждые 50px)
+    for (let i = 50; i >= 5; i -= 5) {
+      this.labelTicks.push(i);
+    }
+  }
+  //
+
+  public get smoothPathCatmull(): string {
+    if (this.points.length < 2) return '';
+
+    let path = `M ${this.points[0].x} ${this.points[0].y}`;
+
+    for (let i = 0; i < this.points.length - 1; i++) {
+      const p0 = this.points[Math.max(0, i - 1)];
+      const p1 = this.points[i];
+      const p2 = this.points[i + 1];
+      const p3 = this.points[Math.min(this.points.length - 1, i + 2)];
+
+      // Коэффициенты Catmull-Rom
+      const tension = 0.5; // 0.5 = стандартный Catmull-Rom
+
+      for (let t = 0; t <= 1; t += 0.1) {
+        // Разбиваем на сегменты
+        const t2 = t * t;
+        const t3 = t2 * t;
+
+        const x =
+          0.5 *
+          (2 * p1.x +
+            (-p0.x + p2.x) * t +
+            (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 +
+            (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3);
+
+        const y =
+          0.5 *
+          (2 * p1.y +
+            (-p0.y + p2.y) * t +
+            (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 +
+            (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3);
+
+        path += ` L ${x} ${y}`;
+      }
+    }
+
+    return path;
+  }
+}

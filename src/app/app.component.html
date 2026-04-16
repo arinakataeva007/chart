@@ -1,0 +1,85 @@
+<!-- <svg>
+  <path
+    [attr.d]="smoothPathCatmull"
+    stroke="blue"
+    stroke-width="3"
+    fill="none"
+  />
+  <circle
+    fill="red"
+    *ngFor="let p of points"
+    [attr.cx]="p?.x"
+    [attr.cy]="p?.y"
+    r="2"
+  />
+</svg>
+ -->
+<svg width="1708" height="368" style="border: 1px solid #ccc">
+  <!-- 🔹 СЕТКА (каждые 5px) -->
+  <!-- <g *ngFor="let i of ticks"> -->
+
+  <!-- горизонтальные линии -->
+  <!-- <line
+      x1="0"
+      [attr.y1]="i"
+      x2="300"
+      [attr.y2]="i"
+      stroke="#eee"
+    /> -->
+
+  <!-- вертикальные линии -->
+  <!-- <line
+      [attr.x1]="i"
+      y1="0"
+      [attr.x2]="i"
+      y2="300"
+      stroke="#eee"
+    /> -->
+
+  <!-- </g> -->
+
+  <!-- 🔹 ОСИ -->
+  <!-- Y -->
+  <line x1="0" y1="368" x2="0" y2="0" stroke="black" stroke-width="2" />
+  <!-- X -->
+  <line x1="0" y1="368" x2="1708" y2="368" stroke="black" stroke-width="2" />
+
+  <!-- 🔹 ДЕЛЕНИЯ (каждые 7,36 px) -->
+  <g *ngFor="let i of ticks">
+    <!-- ticks по Y -->
+    <line x1="0" [attr.y1]="i" x2="5" [attr.y2]="i" stroke="black" />
+
+    <!-- ticks по X -->
+    <!-- <line
+      [attr.x1]="i"
+      y1="300"
+      [attr.x2]="i"
+      y2="295"
+      stroke="black"
+    /> -->
+  </g>
+  <g *ngFor="let i of markTicks">
+    <line
+      x1="0"
+      x2="10"
+      [attr.y1]="368 - i"
+      [attr.y2]="368 - i"
+      stroke="red"
+      stroke-width="2"
+    />
+    <text x="15" [attr.y]="368 - i + 4" font-size="10">
+      {{ (i / 368) * 50 | number:'1.0-0' }}
+    </text>
+  </g>
+
+  <!-- 🔹 ПОДПИСИ (каждые 25px, чтобы не было каши) -->
+  <g *ngFor="let i of labelTicks">
+    <!-- <text x="5" [attr.y]="i" font-size="8">
+      {{i}}
+    </text> -->
+
+    <!-- <text [attr.x]="i" y="295" font-size="8">
+      {{i}}
+    </text> -->
+  </g>
+</svg>
