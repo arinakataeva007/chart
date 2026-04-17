@@ -43,24 +43,32 @@ export class ChartAxesComponent implements OnInit {
     // + 1 потому что по оси X 7 отрезков, но последний не подписываем
     const stepWidth =
       this.width / ((this.countDivivsionsX + 1) * this.countDivivsionsSegment);
-    for (let i = 0; i <= this.width; i += stepWidth) {
-      this.ticksX.push(i);
-    }
-    for(let i = 1; i<= this.countDivivsionsX; i++){
-      this.markTicksX.push(i*(this.countDivivsionsSegment * stepWidth));
+    let index = 0;
+
+    for (let x = 0; x <= this.width; x += stepWidth) {
+      this.ticksX.push(x);
+      // каждый countDivivsionsSegment-й шаг добавляем в markTicksX
+      if (index !== 0 && index % this.countDivivsionsSegment === 0) {
+        const markIndex = index / this.countDivivsionsSegment;
+
+        if (markIndex <= this.countDivivsionsX) {
+          this.markTicksX.push(x);
+        }
+      }
+
+      index++;
     }
   }
 
   private generateAxisY() {
     if (!this.height) return;
-    // + 1 потому что по оси X 7 отрезков, но последний не подписываем
     const stepheight =
       this.height / (this.countDivivsionsY * this.countDivivsionsSegment);
     for (let i = 0; i <= this.height; i += stepheight) {
       this.ticksY.push(i);
     }
-    for(let i = 1; i<= this.countDivivsionsY; i++){
-      this.markTicksY.push(i*(this.countDivivsionsSegment * stepheight));
+    for (let i = 1; i <= this.countDivivsionsY; i++) {
+      this.markTicksY.push(i * (this.countDivivsionsSegment * stepheight));
     }
   }
 }

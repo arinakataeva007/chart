@@ -12,7 +12,7 @@
   </g>
   <g *ngFor="let i of ticksX">
     <!-- ticks по X -->
-    <line [attr.x1]="i" [attr.y1]="templateHeight" [attr.x2]="i" [attr.y2]="templateHeight" stroke="black" />
+    <line [attr.x1]="i" [attr.y1]="templateHeight" [attr.x2]="i" [attr.y2]="templateHeight - 5" stroke="black" />
   </g>
   <g *ngFor="let i of markTicksY">
     <!-- Деления Редкие -->
