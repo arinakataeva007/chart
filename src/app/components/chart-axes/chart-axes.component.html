@@ -1,0 +1,66 @@
+<svg [attr.width]="width" [attr.height]="templateHeight" style="border: 1px solid #ccc; padding: 10px">
+  <!--  ОСИ -->
+  <!-- Y -->
+  <line x1="0" [attr.y1]="templateHeight" x2="0" y2="0" stroke="black" stroke-width="2" />
+  <!-- X -->
+  <line x1="0" [attr.y1]="templateHeight" x2="1708" [attr.y2]="templateHeight" stroke="black" stroke-width="2" />
+
+  <!--  ДЕЛЕНИЯ частые -->
+  <g *ngFor="let i of ticksY">
+    <!-- ticks по Y -->
+    <line x1="0" [attr.y1]="i + paddingChart" x2="5" [attr.y2]="i + paddingChart" stroke="black" />
+  </g>
+  <g *ngFor="let i of ticksX">
+    <!-- ticks по X -->
+    <line [attr.x1]="i" [attr.y1]="templateHeight" [attr.x2]="i" [attr.y2]="templateHeight" stroke="black" />
+  </g>
+  <g *ngFor="let i of markTicksY">
+    <!-- Деления Редкие -->
+    <!-- линии сетки -->
+    <line
+      x1="0"
+      [attr.x2]="width"
+      [attr.y1]="templateHeight - i"
+      [attr.y2]="templateHeight - i"
+      stroke="grey"
+      stroke-width="1"
+    ></line>
+    <line
+      x1="0"
+      x2="10"
+      [attr.y1]="templateHeight - i"
+      [attr.y2]="templateHeight - i"
+      stroke="red"
+      stroke-width="2"
+    />
+    <!-- Подписи для ключевых меток по оси Y -->
+    <text x="15" [attr.y]="templateHeight - i + 4" font-size="10">
+      {{ (i / 368) * 50 | number: "1.0-0" }}
+    </text>
+  </g>
+
+  <g *ngFor="let i of markTicksX">
+    <!-- Деления Редкие -->
+    <!-- линии сетки -->
+    <line
+      y1="0"
+      [attr.y2]="templateHeight"
+      [attr.x1]="i"
+      [attr.x2]="i"
+      stroke="grey"
+      stroke-width="1"
+    />
+    <line
+      [attr.y1]="templateHeight"
+      [attr.y2]="height - 3"
+      [attr.x1]="i"
+      [attr.x2]="i"
+      stroke="red"
+      stroke-width="2"
+    />
+    <!-- Подписи для ключевых меток по оси Х -->
+    <text [attr.y]="height - 13" [attr.x]="1708 - i - 4" font-size="10">
+      {{ (i / 1708) * 50 | number: "1.0-0" }}
+    </text>
+  </g>
+</svg>

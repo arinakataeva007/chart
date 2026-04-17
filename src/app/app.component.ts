@@ -11,13 +11,14 @@ import {
 import { RouterOutlet } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { MaxPipe } from "./max.pipe";
+import { ChartAxesComponent } from "./components/chart-axes/chart-axes.component";
 export interface Point {
   x: number;
   y: number;
 }
 @Component({
   selector: "app-root",
-  imports: [RouterOutlet, CommonModule, MaxPipe],
+  imports: [RouterOutlet, CommonModule, MaxPipe, ChartAxesComponent],
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.scss",
 })
@@ -35,7 +36,6 @@ export class AppComponent implements OnInit {
   //
   protected ticksY: number[] = [];
   protected ticksX: number[] = [];
-  labelTicks: number[] = [];
   protected markTicksY: number[] = [];
   protected markTicksX: number[] = [];
 
@@ -53,13 +53,8 @@ export class AppComponent implements OnInit {
       this.ticksX.push(i);
     }
 
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 6; i++) {
       this.markTicksX.push(i * 244);
-    }
-
-    // подписи реже (каждые 50px)
-    for (let i = 50; i >= 5; i -= 5) {
-      this.labelTicks.push(i);
     }
   }
   //
