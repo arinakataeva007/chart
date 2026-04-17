@@ -14,7 +14,7 @@
   />
 </svg>
  -->
-<svg width="1708" height="368" style="border: 1px solid #ccc">
+<svg width="1708" height="375" style="border: 1px solid #ccc; padding: 10px">
   <!-- 🔹 СЕТКА (каждые 5px) -->
   <!-- <g *ngFor="let i of ticks"> -->
 
@@ -38,46 +38,53 @@
 
   <!-- </g> -->
 
-  <!-- 🔹 ОСИ -->
+  <!--  ОСИ -->
   <!-- Y -->
-  <line x1="0" y1="368" x2="0" y2="0" stroke="black" stroke-width="2" />
+  <line x1="0" y1="375" x2="0" y2="0" stroke="black" stroke-width="2" />
   <!-- X -->
-  <line x1="0" y1="368" x2="1708" y2="368" stroke="black" stroke-width="2" />
+  <line x1="0" y1="375" x2="1708" y2="375" stroke="black" stroke-width="2" />
 
-  <!-- 🔹 ДЕЛЕНИЯ (каждые 7,36 px) -->
-  <g *ngFor="let i of ticks">
+  <!--  ДЕЛЕНИЯ (каждые 7,36 px) мелкие  деления-->
+  <g *ngFor="let i of ticksY">
     <!-- ticks по Y -->
-    <line x1="0" [attr.y1]="i" x2="5" [attr.y2]="i" stroke="black" />
-
-    <!-- ticks по X -->
-    <!-- <line
-      [attr.x1]="i"
-      y1="300"
-      [attr.x2]="i"
-      y2="295"
-      stroke="black"
-    /> -->
+    <line x1="0" [attr.y1]="i + 7" x2="5" [attr.y2]="i + 7" stroke="black" />
   </g>
-  <g *ngFor="let i of markTicks">
+  <g *ngFor="let i of ticksX">
+    <!-- ticks по X -->
+    <line [attr.x1]="i" y1="375" [attr.x2]="i" y2="370" stroke="black" />
+  </g>
+  <g *ngFor="let i of markTicksY">
     <line
       x1="0"
       x2="10"
-      [attr.y1]="368 - i"
-      [attr.y2]="368 - i"
+      [attr.y1]="375 - i"
+      [attr.y2]="375 - i"
       stroke="red"
       stroke-width="2"
     />
-    <text x="15" [attr.y]="368 - i + 4" font-size="10">
-      {{ (i / 368) * 50 | number:'1.0-0' }}
+    <!-- Подписи для ключевых меток по оси Y -->
+    <text x="15" [attr.y]="375 - i + 4" font-size="10">
+      {{ (i / 368) * 50 | number: "1.0-0" }}
     </text>
   </g>
 
-  <!-- 🔹 ПОДПИСИ (каждые 25px, чтобы не было каши) -->
-  <g *ngFor="let i of labelTicks">
-    <!-- <text x="5" [attr.y]="i" font-size="8">
-      {{i}}
+  <g *ngFor="let i of markTicksX">
+    <line
+      y1="375"
+      y2="365"
+      [attr.x1]="i"
+      [attr.x2]="i"
+      stroke="red"
+      stroke-width="2"
+    />
+    <!-- Подписи для ключевых меток по оси Y -->
+    <!-- <text x="15" [attr.y]="375 - i + 4" font-size="10">
+      {{ (i / 368) * 50 | number: "1.0-0" }}
     </text> -->
+  </g>
 
+  <!--  ПОДПИСИ (каждые 25px, чтобы не было каши) -->
+  <g *ngFor="let i of labelTicks">
     <!-- <text [attr.x]="i" y="295" font-size="8">
       {{i}}
     </text> -->

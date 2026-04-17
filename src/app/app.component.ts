@@ -7,21 +7,24 @@ import {
   OnInit,
   SimpleChanges,
   ViewChild,
-} from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { MaxPipe } from './max.pipe';
+} from "@angular/core";
+import { RouterOutlet } from "@angular/router";
+import { CommonModule } from "@angular/common";
+import { MaxPipe } from "./max.pipe";
 export interface Point {
   x: number;
   y: number;
 }
 @Component({
-  selector: 'app-root',
+  selector: "app-root",
   imports: [RouterOutlet, CommonModule, MaxPipe],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+  templateUrl: "./app.component.html",
+  styleUrl: "./app.component.scss",
 })
 export class AppComponent implements OnInit {
+
+  protected heightChart = 368;
+  protected widthChart = 1708;
   protected points: Point[] = [
     { x: 10, y: 20 },
     { x: 30, y: 40 },
@@ -30,18 +33,28 @@ export class AppComponent implements OnInit {
     { x: 90, y: 30 },
   ];
   //
-  ticks: number[] = [];
+  protected ticksY: number[] = [];
+  protected ticksX: number[] = [];
   labelTicks: number[] = [];
-  markTicks: number[] = [];
+  protected markTicksY: number[] = [];
+  protected markTicksX: number[] = [];
 
   ngOnInit() {
     // каждые 5px
-    for (let i = 0; i <= 368; i += 7.36) {
-      this.ticks.push(i);
+    for (let i = 0; i <= this.heightChart; i += 7.36) {
+      this.ticksY.push(i);
     }
 
-    for (let i = 36.8; i <= 368; i += 36.8) {
-      this.markTicks.push(i);
+    for (let i = 1; i <= 10; i++) {
+      this.markTicksY.push(i * 36.8);
+    }
+
+    for(let i = 0; i<= this.widthChart; i += 48.8){
+      this.ticksX.push(i);
+    }
+
+    for (let i = 1; i <= 10; i++) {
+      this.markTicksX.push(i * 244);
     }
 
     // подписи реже (каждые 50px)
@@ -52,7 +65,7 @@ export class AppComponent implements OnInit {
   //
 
   public get smoothPathCatmull(): string {
-    if (this.points.length < 2) return '';
+    if (this.points.length < 2) return "";
 
     let path = `M ${this.points[0].x} ${this.points[0].y}`;
 
