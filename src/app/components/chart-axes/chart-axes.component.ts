@@ -1,5 +1,11 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
+export type Tick = {
+  x: number;
+  time: Date;
+  isMajor: boolean;
+};
+
 @Component({
   selector: "app-chart-axes",
   imports: [CommonModule],
@@ -11,6 +17,7 @@ export class ChartAxesComponent implements OnInit {
   @Input() width = 1708;
   @Input() maxValueY = 50;
   @Input() valuesX: string[] = [];
+  @Input() axisXValues: string[] = [];
 
   constructor() {}
 
@@ -34,29 +41,61 @@ export class ChartAxesComponent implements OnInit {
   protected paddingChart = 7;
 
   protected ticksY: number[] = [];
-  protected ticksX: number[] = [];
+  // protected ticksX: number[] = [];
   protected markTicksY: number[] = [];
-  protected markTicksX: number[] = [];
+  protected ticks: Tick[] = [];
+  // protected markTicksX: number[] = [];
+
+  // private generateAxisX() {
+  //   if (!this.width) return;
+  //   // + 1 потому что по оси X 7 отрезков, но последний не подписываем
+  //   const stepWidth =
+  //     this.width / ((this.countDivivsionsX + 1) * this.countDivivsionsSegment);
+  //   let index = 1;
+
+  //   for (let x = stepWidth; x <= this.width; x += stepWidth) {
+  //     this.ticksX.push(x);
+  //     // каждый countDivivsionsSegment-й шаг добавляем в markTicksX
+  //     if (index !== 0 && index % this.countDivivsionsSegment === 0) {
+  //       const markIndex = index / this.countDivivsionsSegment;
+
+  //       if (markIndex <= this.countDivivsionsX) {
+  //         this.markTicksX.push(x);
+  //       }
+  //     }
+
+  //     index++;
+  //   }
+  // }
 
   private generateAxisX() {
     if (!this.width) return;
-    // + 1 потому что по оси X 7 отрезков, но последний не подписываем
-    const stepWidth =
-      this.width / ((this.countDivivsionsX + 1) * this.countDivivsionsSegment);
-    let index = 1;
 
-    for (let x = stepWidth; x <= this.width; x += stepWidth) {
-      this.ticksX.push(x);
-      // каждый countDivivsionsSegment-й шаг добавляем в markTicksX
-      if (index !== 0 && index % this.countDivivsionsSegment === 0) {
-        const markIndex = index / this.countDivivsionsSegment;
+    this.ticks = [];
 
-        if (markIndex <= this.countDivivsionsX) {
-          this.markTicksX.push(x);
-        }
-      }
+    const start = new Date();
+    start.setHours(21, 0, 0, 0);
 
-      index++;
+    const end = new Date();
+    end.setHours(21, 15, 0, 0);
+
+    const totalMs = end.getTime() - start.getTime();
+
+    const totalSteps =
+      (this.countDivivsionsX + 1) * this.countDivivsionsSegment;
+
+    const stepWidth = this.width / totalSteps;
+    const stepTime = totalMs / totalSteps;
+
+    for (let i = 1; i <= totalSteps; i++) {
+      const x = i * stepWidth;
+      const time = new Date(start.getTime() + i * stepTime);
+
+      this.ticks.push({
+        x,
+        time,
+        isMajor: i % this.countDivivsionsSegment === 0,
+      });
     }
   }
 
