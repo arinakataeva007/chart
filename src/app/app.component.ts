@@ -18,7 +18,7 @@ export interface Point {
 }
 @Component({
   selector: "app-root",
-  imports: [RouterOutlet, CommonModule, MaxPipe, ChartAxesComponent],
+  imports: [CommonModule, ChartAxesComponent],
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.scss",
 })

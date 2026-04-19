@@ -4,6 +4,19 @@
   [attr.width]="width"
   [attr.height]="templateHeight"
 >
+  <path
+    [attr.d]="smoothPathCatmull"
+    stroke="blue"
+    stroke-width="3"
+    fill="none"
+  />
+  <circle
+    fill="red"
+    *ngFor="let p of scaledPoints"
+    [attr.cx]="p.x"
+    [attr.cy]="p.y"
+    r="3"
+  />
   <!--  ОСИ -->
   <!-- Y -->
   <line x1="0" class="axis" [attr.y1]="templateHeight" x2="0" y2="0" />
