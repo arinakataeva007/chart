@@ -29,8 +29,8 @@
     />
   </g>
   <!-- <g *ngFor="let i of ticksX"> -->
-    <!-- ticks по X -->
-    <!-- <line
+  <!-- ticks по X -->
+  <!-- <line
       class="tick"
       [attr.x1]="i"
       [attr.y1]="templateHeight"
@@ -87,11 +87,21 @@
   <g *ngFor="let t of ticks">
     <!-- сетка -->
     <line
+      *ngIf="t.isMajor"
       class="grid"
       y1="0"
       [attr.y2]="templateHeight"
       [attr.x1]="t.x"
       [attr.x2]="t.x"
+    />
+
+    <line
+      class="tick"
+      [attr.x1]="t.x"
+      [attr.y1]="templateHeight"
+      [attr.x2]="t.x"
+      [attr.y2]="templateHeight + 5"
+      stroke="black"
     />
 
     <!-- деления -->

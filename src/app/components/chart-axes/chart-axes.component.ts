@@ -69,35 +69,32 @@ export class ChartAxesComponent implements OnInit {
   // }
 
   private generateAxisX() {
-    if (!this.width) return;
+  if (!this.width) return;
 
-    this.ticks = [];
+  this.ticks = [];
 
-    const start = new Date();
-    start.setHours(21, 0, 0, 0);
+  const start = new Date();
+  start.setHours(21, 0, 0, 0);
 
-    const end = new Date();
-    end.setHours(21, 15, 0, 0);
+  const end = new Date();
+  end.setHours(21, 15, 0, 0);
 
-    const totalMs = end.getTime() - start.getTime();
+  const totalMs = end.getTime() - start.getTime();
 
-    const totalSteps =
-      (this.countDivivsionsX + 1) * this.countDivivsionsSegment;
+  const totalSteps =
+    (this.countDivivsionsX + 1) * this.countDivivsionsSegment;
 
-    const stepWidth = this.width / totalSteps;
-    const stepTime = totalMs / totalSteps;
+  const stepWidth = this.width / totalSteps;
+  const stepTime = totalMs / totalSteps;
 
-    for (let i = 1; i <= totalSteps; i++) {
-      const x = i * stepWidth;
-      const time = new Date(start.getTime() + i * stepTime);
-
-      this.ticks.push({
-        x,
-        time,
-        isMajor: i % this.countDivivsionsSegment === 0,
-      });
-    }
+  for (let i = 1; i <= totalSteps; i++) {
+    this.ticks.push({
+      x: i * stepWidth,
+      time: new Date(start.getTime() + i * stepTime),
+      isMajor: i % this.countDivivsionsSegment === 0,
+    });
   }
+}
 
   private generateAxisY() {
     if (!this.height) return;
