@@ -1,0 +1,33 @@
+:host {
+  width: 100%;
+  height: auto;
+  .chart {
+    .axis {
+      stroke-width: 1px;
+      stroke: rgba(150, 155, 168, 1);
+    }
+    .tick {
+      stroke-width: 1px;
+      stroke: rgba(150, 155, 168, 1);
+      opacity: 0.5;
+      &-title {
+        stroke-width: 1px;
+        stroke: rgba(150, 155, 168, 1);
+      }
+    }
+    .text {
+      color: var(--Text-Secondary-Text-Default, #969ba8);
+
+      /* Small/Regular */
+      font-family: Rubik;
+      font-size: var(--FontSize-Small, 12px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--FontHight-Small, 14px); /* 116.667% */
+    }
+    .grid{
+        stroke-width: 1px;
+        stroke:#EAECF1;
+    }
+  }
+}

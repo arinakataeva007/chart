@@ -43,9 +43,9 @@ export class ChartAxesComponent implements OnInit {
     // + 1 потому что по оси X 7 отрезков, но последний не подписываем
     const stepWidth =
       this.width / ((this.countDivivsionsX + 1) * this.countDivivsionsSegment);
-    let index = 0;
+    let index = 1;
 
-    for (let x = 0; x <= this.width; x += stepWidth) {
+    for (let x = stepWidth; x <= this.width; x += stepWidth) {
       this.ticksX.push(x);
       // каждый countDivivsionsSegment-й шаг добавляем в markTicksX
       if (index !== 0 && index % this.countDivivsionsSegment === 0) {
