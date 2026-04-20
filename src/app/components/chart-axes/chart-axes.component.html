@@ -4,19 +4,21 @@
   [attr.width]="width"
   [attr.height]="templateHeight"
 >
+  <ng-container *ngFor="let line of scaledSeries; let i = index">
   <path
-    [attr.d]="smoothPathCatmull"
-    stroke="blue"
-    stroke-width="3"
+    [attr.d]="buildPath(line)"
+    [attr.stroke]="colors[i]"
+    stroke-width="2"
     fill="none"
   />
   <circle
-    fill="red"
-    *ngFor="let p of scaledPoints"
+    *ngFor="let p of line"
     [attr.cx]="p.x"
     [attr.cy]="p.y"
+    [attr.stroke]="colors[i]"
     r="3"
   />
+</ng-container>
   <!--  ОСИ -->
   <!-- Y -->
   <line x1="0" class="axis" [attr.y1]="templateHeight" x2="0" y2="0" />

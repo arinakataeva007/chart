@@ -25,10 +25,18 @@ export class ChartAxesComponent implements OnInit {
   @Input() maxValueY = 50;
   @Input() valuesX: string[] = [];
   @Input() axisXValues: string[] = [];
-  @Input() points: Point[] = [
-    { time: new Date(2024, 0, 1, 21, 2, 8), value: 10 },
-    { time: new Date(2024, 0, 1, 21, 5, 0), value: 40 },
-    { time: new Date(2024, 0, 1, 21, 10, 0), value: 20 },
+  @Input() rangeMinutes = 15;
+  @Input() points: Point[][] = [
+    [
+      { time: new Date(2026, 0, 1, 21, 2, 8), value: 10 },
+      { time: new Date(2026, 0, 1, 21, 5, 0), value: 40 },
+      { time: new Date(2026, 0, 1, 21, 10, 0), value: 20 },
+    ],
+    [
+      { time: new Date(2026, 0, 1, 21, 5, 42), value: 50 },
+      { time: new Date(2026, 0, 1, 21, 7, 0), value: 11 },
+      { time: new Date(2026, 0, 1, 21, 10, 0), value: 30 },
+    ],
   ];
 
   constructor() {}
@@ -57,57 +65,18 @@ export class ChartAxesComponent implements OnInit {
   protected markTicksY: number[] = [];
   protected ticks: Tick[] = [];
 
-  // public get smoothPathCatmull(): string {
-  //   if (this.points.length < 2) return "";
+  colors = ["blue", "red", "green", "orange"];
 
-  //   let path = `M ${this.points[0].x} ${this.points[0].y}`;
+  buildPath(points: PointCoordinate[]): string {
+    if (!points || points.length < 2) return "";
 
-  //   for (let i = 0; i < this.points.length - 1; i++) {
-  //     const p0 = this.points[Math.max(0, i - 1)];
-  //     const p1 = this.points[i];
-  //     const p2 = this.points[i + 1];
-  //     const p3 = this.points[Math.min(this.points.length - 1, i + 2)];
+    let path = `M ${points[0].x} ${points[0].y}`;
 
-  //     // Коэффициенты Catmull-Rom
-  //     const tension = 0.5; // 0.5 = стандартный Catmull-Rom
-
-  //     for (let t = 0; t <= 1; t += 0.1) {
-  //       // Разбиваем на сегменты
-  //       const t2 = t * t;
-  //       const t3 = t2 * t;
-
-  //       const x =
-  //         0.5 *
-  //         (2 * p1.x +
-  //           (-p0.x + p2.x) * t +
-  //           (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 +
-  //           (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3);
-
-  //       const y =
-  //         0.5 *
-  //         (2 * p1.y +
-  //           (-p0.y + p2.y) * t +
-  //           (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 +
-  //           (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3);
-
-  //       path += ` L ${x} ${y}`;
-  //     }
-  //   }
-
-  //   return path;
-  // }
-  public get smoothPathCatmull(): string {
-    const pts = this.scaledPoints;
-
-    if (pts.length < 2) return "";
-
-    let path = `M ${pts[0].x} ${pts[0].y}`;
-
-    for (let i = 0; i < pts.length - 1; i++) {
-      const p0 = pts[Math.max(0, i - 1)];
-      const p1 = pts[i];
-      const p2 = pts[i + 1];
-      const p3 = pts[Math.min(pts.length - 1, i + 2)];
+    for (let i = 0; i < points.length - 1; i++) {
+      const p0 = points[Math.max(0, i - 1)];
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      const p3 = points[Math.min(points.length - 1, i + 2)];
 
       for (let t = 0; t <= 1; t += 0.1) {
         const t2 = t * t;
@@ -127,7 +96,9 @@ export class ChartAxesComponent implements OnInit {
             (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 +
             (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3);
 
-        path += ` L ${x} ${y}`;
+        if (!isNaN(x) && !isNaN(y)) {
+          path += ` L ${x} ${y}`;
+        }
       }
     }
 
@@ -136,14 +107,11 @@ export class ChartAxesComponent implements OnInit {
 
   private generateAxisX() {
     if (!this.width) return;
-    const start = new Date();
-    start.setHours(21, 0, 0, 0);
 
-    const end = new Date();
-    end.setHours(21, 15, 0, 0);
+    this.ticks = [];
 
-    const totalMs = end.getTime() - start.getTime();
-    //+1 потому что 7 отрезков, но последний не подписываем
+    const totalMs = this.endTime - this.startTime;
+
     const totalSteps =
       (this.countDivivsionsX + 1) * this.countDivivsionsSegment;
 
@@ -153,8 +121,8 @@ export class ChartAxesComponent implements OnInit {
     for (let i = 1; i <= totalSteps; i++) {
       this.ticks.push({
         x: i * stepWidth,
-        time: new Date(start.getTime() + i * stepTime),
-        isMajor: i % this.countDivivsionsSegment === 0, // каждое 5 деление
+        time: new Date(this.startTime + i * stepTime),
+        isMajor: i % this.countDivivsionsSegment === 0,
       });
     }
   }
@@ -175,42 +143,32 @@ export class ChartAxesComponent implements OnInit {
   private endTime!: number;
 
   private initScales() {
-    // const start = new Date();
-    // start.setHours(21, 0, 0, 0);
+    const allPoints = this.points.flat();
 
-    // const end = new Date();
-    // end.setHours(21, 15, 0, 0);
-
-    // this.startTime = start.getTime();
-    // this.endTime = end.getTime();
-
-    const times = this.points.map((p) => p.time.getTime());
+    const times = allPoints.map((p) => p.time.getTime());
 
     this.startTime = Math.min(...times);
     this.endTime = Math.max(...times);
   }
 
   private mapX(time: Date): number {
-    const t = time.getTime();
+  const t = time.getTime();
 
-    if (t < this.startTime || t > this.endTime) {
-      return NaN; // или не рисовать точку
-    }
-
-    return (
-      ((t - this.startTime) / (this.endTime - this.startTime)) * this.width
-    );
-  }
+  return ((t - this.startTime) / (this.endTime - this.startTime)) * this.width;
+}
   private mapY(value: number): number {
     return this.templateHeight - (value / this.maxValueY) * this.height;
   }
-  public get scaledPoints(): any[] {
-    const result = this.points.map((p) => ({
-      x: this.mapX((p as any).time),
-      y: this.mapY((p as any).value),
-    }));
+  public get scaledSeries(): PointCoordinate[][] {
+    return this.points.map((series) => {
+      const sorted = [...series].sort(
+        (a, b) => a.time.getTime() - b.time.getTime(),
+      );
 
-    console.log(result);
-    return result;
+      return sorted.map((p) => ({
+        x: this.mapX(p.time),
+        y: this.mapY(p.value),
+      }));
+    });
   }
 }
