@@ -1,18 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
-export type Tick = {
-  x: number;
-  time: Date;
-  isMajor: boolean;
-};
-export interface Point {
-  time: Date;
-  value: number;
-}
-export interface PointCoordinate {
-  x: number;
-  y: number;
-}
+import { Point, PointCoordinate, Tick } from "../../models/chart.model";
+
 @Component({
   selector: "app-chart-axes",
   imports: [CommonModule],
@@ -20,13 +9,11 @@ export interface PointCoordinate {
   styleUrl: "./chart-axes.component.scss",
 })
 export class ChartAxesComponent implements OnInit {
-  @Input() height = 368;
-  @Input() width = 1708;
-  @Input() maxValueY = 50;
-  @Input() valuesX: string[] = [];
-  @Input() axisXValues: string[] = [];
-  @Input() rangeMinutes = 15;
-  @Input() points: Point[][] = [
+  @Input() height = 368; // высота оси Y
+  @Input() width = 1708; // ширина оиси Х
+  @Input() maxValueY = 50; // самое большое значение по оси Y
+  @Input() rangeMinutes = 15; // задает диапозон от конечного времени (необходимо выбирать последний элемент с временем макс. приближенным к последнему и потом уже брать все точки, входящие в диапозон)
+  @Input() points: Point[][] = [ // набор точек для линий
     [
       { time: new Date(2026, 0, 1, 21, 2, 8), value: 10 },
       { time: new Date(2026, 0, 1, 21, 5, 0), value: 40 },
@@ -52,6 +39,9 @@ export class ChartAxesComponent implements OnInit {
     return this.height + this.paddingChart;
   }
 
+  private startTime!: number;
+  private endTime!: number;
+
   // Фиксированное количество ключевых делений
   private countDivivsionsX = 6;
   private countDivivsionsY = 10;
@@ -68,7 +58,7 @@ export class ChartAxesComponent implements OnInit {
 
   colors = ["blue", "red", "green", "orange"];
 
-  buildPath(points: PointCoordinate[]): string {
+  protected buildPath(points: PointCoordinate[]): string {
     if (!points || points.length < 2) return "";
 
     let path = `M ${points[0].x} ${points[0].y}`;
@@ -106,16 +96,27 @@ export class ChartAxesComponent implements OnInit {
     return path;
   }
 
+  /**
+   * Мапим точки из типа время:значение к координатам на графике
+   */
+  protected get scaledSeries(): PointCoordinate[][] {
+    return this.points.map((series) => {
+      const sorted = [...series].sort(
+        (a, b) => a.time.getTime() - b.time.getTime(),
+      );
+
+      return sorted.map((p) => ({
+        x: this.mapX(p.time),
+        y: this.mapY(p.value),
+      }));
+    });
+  }
+
   private generateAxisX() {
     if (!this.width) return;
-
-    this.ticks = [];
-
     const totalMs = this.endTime - this.startTime;
-
     const totalSteps =
       (this.countDivivsionsX + 1) * this.countDivivsionsSegment;
-
     const stepWidth = this.width / totalSteps;
     const stepTime = totalMs / totalSteps;
 
@@ -140,9 +141,9 @@ export class ChartAxesComponent implements OnInit {
     }
   }
 
-  private startTime!: number;
-  private endTime!: number;
-
+  /**
+   * Задает разметку по оси Х учитывая максимальное время элемента из массива и диапозон
+   */
   private initScales() {
     const allPoints = this.points.flat();
 
@@ -159,22 +160,14 @@ export class ChartAxesComponent implements OnInit {
       ((t - this.startTime) / (this.endTime - this.startTime)) * this.width
     );
   }
+
   private mapY(value: number): number {
     return this.templateHeight - (value / this.maxValueY) * this.height;
   }
-  public get scaledSeries(): PointCoordinate[][] {
-    return this.points.map((series) => {
-      const sorted = [...series].sort(
-        (a, b) => a.time.getTime() - b.time.getTime(),
-      );
 
-      return sorted.map((p) => ({
-        x: this.mapX(p.time),
-        y: this.mapY(p.value),
-      }));
-    });
-  }
-
+  /**
+   * Фильтруем точки, чтобы точно отсеить все не входящие в диапозон
+   */
   private filterPointsByRange() {
     this.points = this.points.map((series) =>
       series.filter((p) => {

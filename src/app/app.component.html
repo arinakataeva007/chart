@@ -1,16 +1,7 @@
-<!-- <svg class="points-card">
-  <path
-    [attr.d]="smoothPathCatmull"
-    stroke="blue"
-    stroke-width="3"
-    fill="none"
-  />
-  <circle
-    fill="red"
-    *ngFor="let p of points"
-    [attr.cx]="p?.x"
-    [attr.cy]="p?.y"
-    r="2"
-  />
-</svg> -->
+<form [formGroup]="form">
+  <input placeholder="StartTime" formControlName="startTime" />
+  <input placeholder="EndTime" formControlName="endTime"/>
+  <input placeholder="Range" formControlName="range" />
+  <button (click)="changeControlValue()">Submit</button>
+</form>
 <app-chart-axes></app-chart-axes>

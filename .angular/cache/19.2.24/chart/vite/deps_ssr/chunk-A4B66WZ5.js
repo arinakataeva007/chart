@@ -5,7 +5,7 @@ import {
   EVENT_MANAGER_PLUGINS,
   EventManagerPlugin,
   HTTP_ROOT_INTERCEPTOR_FNS
-} from "./chunk-5QYAJDNP.js";
+} from "./chunk-RK7EYPTL.js";
 import {
   DOCUMENT,
   NullViewportScroller,
@@ -15,7 +15,7 @@ import {
   XhrFactory,
   getDOM,
   setRootDomAdapter
-} from "./chunk-RBPGB5SO.js";
+} from "./chunk-4BAHSEEV.js";
 import {
   APP_ID,
   ApplicationRef,
@@ -49,13 +49,13 @@ import {
   ɵɵdefineInjector,
   ɵɵdefineNgModule,
   ɵɵinject
-} from "./chunk-K5HHNXBK.js";
+} from "./chunk-JBHELGNS.js";
 import {
   __async,
   __toESM
 } from "./chunk-YHCV7DAQ.js";
 
-// node_modules/@angular/platform-server/fesm2022/server-hHJ05Ji8.mjs
+// ../../../../node_modules/@angular/platform-server/fesm2022/server-hHJ05Ji8.mjs
 var import_rxjs = __toESM(require_cjs(), 1);
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __commonJS = (cb, mod) => function __require() {
@@ -16252,7 +16252,7 @@ var ServerXhr = class _ServerXhr {
       if (!this.xhrImpl) {
         const {
           default: xhr
-        } = yield import("./xhr2-TXIMV6CV.js");
+        } = yield import("./xhr2-H22Z3D5I.js");
         this.xhrImpl = xhr;
       }
     });
@@ -16622,7 +16622,7 @@ function platformServer(extraProviders) {
   return platform;
 }
 
-// node_modules/@angular/platform-server/fesm2022/platform-server.mjs
+// ../../../../node_modules/@angular/platform-server/fesm2022/platform-server.mjs
 var import_rxjs2 = __toESM(require_cjs(), 1);
 function provideServerRendering() {
   if (false) {
@@ -16824,4 +16824,4 @@ export {
    * License: MIT
    *)
 */
-//# sourceMappingURL=chunk-ZINFAYEU.js.map
+//# sourceMappingURL=chunk-A4B66WZ5.js.map

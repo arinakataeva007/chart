@@ -28,17 +28,6 @@
       stroke="black"
     />
   </g>
-  <!-- <g *ngFor="let i of ticksX"> -->
-  <!-- ticks по X -->
-  <!-- <line
-      class="tick"
-      [attr.x1]="i"
-      [attr.y1]="templateHeight"
-      [attr.x2]="i"
-      [attr.y2]="templateHeight + 5"
-      stroke="black"
-    /> -->
-  <!-- </g> -->
   <g *ngFor="let i of markTicksY">
     <!-- Деления Редкие -->
     <!-- линии сетки -->
@@ -61,29 +50,6 @@
       {{ (i / 368) * 50 | number: "1.0-0" }}
     </text>
   </g>
-
-  <!-- <g *ngFor="let i of markTicksX"> -->
-  <!-- Деления Редкие -->
-  <!-- линии сетки -->
-  <!-- <line
-      class="grid"
-      y1="0"
-      [attr.y2]="templateHeight"
-      [attr.x1]="i"
-      [attr.x2]="i"
-    />
-    <line
-      class="tick-title"
-      [attr.y1]="templateHeight"
-      [attr.y2]="height + 15"
-      [attr.x1]="i"
-      [attr.x2]="i"
-    /> -->
-  <!-- Подписи для ключевых меток по оси Х -->
-  <!-- <text class="text" [attr.y]="height + 27" [attr.x]="1708 - i - 6">
-      {{ (i / 1708) * 50 | number: "1.0-0" }}
-    </text> -->
-  <!-- </g> -->
   <g *ngFor="let t of ticks">
     <!-- сетка -->
     <line
