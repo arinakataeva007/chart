@@ -35,7 +35,7 @@ export class ChartAxesComponent implements OnInit {
     [
       { time: new Date(2026, 0, 1, 21, 5, 42), value: 50 },
       { time: new Date(2026, 0, 1, 21, 7, 0), value: 11 },
-      { time: new Date(2026, 0, 1, 21, 10, 0), value: 30 },
+      { time: new Date(2026, 0, 1, 21, 10, 12), value: 30 },
     ],
   ];
 
@@ -43,6 +43,7 @@ export class ChartAxesComponent implements OnInit {
 
   public ngOnInit() {
     this.initScales();
+    this.filterPointsByRange();
     this.generateAxisX();
     this.generateAxisY();
   }
@@ -145,17 +146,19 @@ export class ChartAxesComponent implements OnInit {
   private initScales() {
     const allPoints = this.points.flat();
 
-    const times = allPoints.map((p) => p.time.getTime());
+    const maxTime = Math.max(...allPoints.map((p) => p.time.getTime()));
 
-    this.startTime = Math.min(...times);
-    this.endTime = Math.max(...times);
+    this.endTime = maxTime;
+    this.startTime = maxTime - this.rangeMinutes * 60 * 1000;
   }
 
   private mapX(time: Date): number {
-  const t = time.getTime();
+    const t = time.getTime();
 
-  return ((t - this.startTime) / (this.endTime - this.startTime)) * this.width;
-}
+    return (
+      ((t - this.startTime) / (this.endTime - this.startTime)) * this.width
+    );
+  }
   private mapY(value: number): number {
     return this.templateHeight - (value / this.maxValueY) * this.height;
   }
@@ -170,5 +173,14 @@ export class ChartAxesComponent implements OnInit {
         y: this.mapY(p.value),
       }));
     });
+  }
+
+  private filterPointsByRange() {
+    this.points = this.points.map((series) =>
+      series.filter((p) => {
+        const t = p.time.getTime();
+        return t >= this.startTime && t <= this.endTime;
+      }),
+    );
   }
 }

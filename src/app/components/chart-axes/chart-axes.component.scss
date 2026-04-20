@@ -17,8 +17,6 @@
     }
     .text {
       color: var(--Text-Secondary-Text-Default, #969ba8);
-
-      /* Small/Regular */
       font-family: Rubik;
       font-size: var(--FontSize-Small, 12px);
       font-style: normal;
@@ -26,8 +24,12 @@
       line-height: var(--FontHight-Small, 14px); /* 116.667% */
     }
     .grid{
+        z-index: 0;
         stroke-width: 1px;
         stroke:#EAECF1;
+    }
+    .path{
+      z-index: 1;
     }
   }
 }
