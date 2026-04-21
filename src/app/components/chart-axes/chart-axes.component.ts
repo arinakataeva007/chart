@@ -1,4 +1,11 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Point, PointCoordinate, Tick } from "../../models/chart.model";
 
@@ -8,46 +15,26 @@ import { Point, PointCoordinate, Tick } from "../../models/chart.model";
   templateUrl: "./chart-axes.component.html",
   styleUrl: "./chart-axes.component.scss",
 })
-export class ChartAxesComponent implements OnInit {
+export class ChartAxesComponent implements OnChanges {
   @Input() height = 368; // высота оси Y
   @Input() width = 1708; // ширина оиси Х
   @Input() maxValueY = 50; // самое большое значение по оси Y
+  @Input() maxValueX!: Date;
   @Input() rangeMinutes = 15; // задает диапозон от конечного времени (необходимо выбирать последний элемент с временем макс. приближенным к последнему и потом уже брать все точки, входящие в диапозон)
-  @Input() points: Point[][] = [ // набор точек для линий
-    [
-      { time: new Date(2026, 0, 1, 21, 2, 8), value: 10 },
-      { time: new Date(2026, 0, 1, 21, 5, 0), value: 40 },
-      { time: new Date(2026, 0, 1, 21, 10, 0), value: 20 },
-    ],
-    [
-      { time: new Date(2026, 0, 1, 21, 5, 42), value: 50 },
-      { time: new Date(2026, 0, 1, 21, 7, 0), value: 11 },
-      { time: new Date(2026, 0, 1, 21, 10, 12), value: 30 },
-    ],
-  ];
+  @Input() points: Record<string, Point[]> = {};
 
-  constructor() {}
+  constructor(private cdr: ChangeDetectorRef) {}
 
-  public ngOnInit() {
-    this.initScales();
-    this.filterPointsByRange();
-    this.generateAxisX();
-    this.generateAxisY();
+  public ngOnChanges(changes: SimpleChanges) {
+    if (changes["points"] || changes["maxValueY"]) {
+      console.log(this.points, this.maxValueY);
+      this.rebuildChart();
+    }
   }
 
   public get templateHeight() {
     return this.height + this.paddingChart;
   }
-
-  private startTime!: number;
-  private endTime!: number;
-
-  // Фиксированное количество ключевых делений
-  private countDivivsionsX = 6;
-  private countDivivsionsY = 10;
-
-  // Количество делений в отрезке на осях
-  private countDivivsionsSegment = 5;
 
   // Для того, чтобы было видно последнее деление на осях
   protected paddingChart = 7;
@@ -57,6 +44,17 @@ export class ChartAxesComponent implements OnInit {
   protected ticks: Tick[] = [];
 
   colors = ["blue", "red", "green", "orange"];
+
+  private startTime!: number;
+  private endTime!: number;
+
+
+  // Фиксированное количество ключевых делений
+  private countDivivsionsX = 6;
+  private countDivivsionsY = 10;
+
+  // Количество делений в отрезке на осях
+  private countDivivsionsSegment = 5;
 
   protected buildPath(points: PointCoordinate[]): string {
     if (!points || points.length < 2) return "";
@@ -100,20 +98,25 @@ export class ChartAxesComponent implements OnInit {
    * Мапим точки из типа время:значение к координатам на графике
    */
   protected get scaledSeries(): PointCoordinate[][] {
-    return this.points.map((series) => {
+    return Object.entries(this.points).map(([id, series]) => {
       const sorted = [...series].sort(
         (a, b) => a.time.getTime() - b.time.getTime(),
       );
 
       return sorted.map((p) => ({
+        id: id,
         x: this.mapX(p.time),
         y: this.mapY(p.value),
       }));
     });
   }
 
+  protected clickOnPoint(p: any){
+    console.log(p);
+  }
+
   private generateAxisX() {
-    if (!this.width) return;
+    if (!this.width || isNaN(this.startTime) || isNaN(this.endTime)) return;
     const totalMs = this.endTime - this.startTime;
     const totalSteps =
       (this.countDivivsionsX + 1) * this.countDivivsionsSegment;
@@ -145,9 +148,16 @@ export class ChartAxesComponent implements OnInit {
    * Задает разметку по оси Х учитывая максимальное время элемента из массива и диапозон
    */
   private initScales() {
-    const allPoints = this.points.flat();
+    const allPoints = Object.values(this.points).flat();
+    const validTimes = allPoints
+      .map((p) => p.time.getTime())
+      .filter((t) => !isNaN(t));
 
-    const maxTime = Math.max(...allPoints.map((p) => p.time.getTime()));
+    if (!validTimes.length) {
+      return;
+    }
+
+    const maxTime = Math.max(...validTimes);
 
     this.endTime = maxTime;
     this.startTime = maxTime - this.rangeMinutes * 60 * 1000;
@@ -156,9 +166,14 @@ export class ChartAxesComponent implements OnInit {
   private mapX(time: Date): number {
     const t = time.getTime();
 
-    return (
-      ((t - this.startTime) / (this.endTime - this.startTime)) * this.width
-    );
+    if (isNaN(t) || isNaN(this.startTime) || isNaN(this.endTime)) {
+      return 0;
+    }
+
+    const range = this.endTime - this.startTime;
+    if (!range) return 0;
+
+    return ((t - this.startTime) / range) * this.width;
   }
 
   private mapY(value: number): number {
@@ -169,11 +184,26 @@ export class ChartAxesComponent implements OnInit {
    * Фильтруем точки, чтобы точно отсеить все не входящие в диапозон
    */
   private filterPointsByRange() {
-    this.points = this.points.map((series) =>
-      series.filter((p) => {
+    const filtered: Record<string, Point[]> = {};
+    for (const key in this.points) {
+      filtered[key] = this.points[key].filter((p) => {
         const t = p.time.getTime();
         return t >= this.startTime && t <= this.endTime;
-      }),
-    );
+      });
+    }
+    this.points = filtered;
+  }
+
+  private rebuildChart() {
+    if(!this.points) return;
+    this.ticks = [];
+    this.ticksY = [];
+    this.markTicksY = [];
+
+    this.initScales();
+    this.filterPointsByRange();
+    this.generateAxisX();
+    this.generateAxisY();
+    this.cdr.detectChanges();
   }
 }

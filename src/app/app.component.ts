@@ -1,11 +1,10 @@
-import { AfterViewInit, Component, OnInit } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, Component, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ChartAxesComponent } from "./components/chart-axes/chart-axes.component";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { ChartService } from "./injections/chartMapping.service";
-import { applications, IApplication } from "./data/applications.data";
+import { applications } from "./data/applications.data";
 import { Point } from "./models/chart.model";
-import { range } from "rxjs";
 @Component({
   selector: "app-root",
   imports: [CommonModule, ChartAxesComponent, ReactiveFormsModule],
@@ -14,14 +13,12 @@ import { range } from "rxjs";
   styleUrl: "./app.component.scss",
 })
 export class AppComponent implements AfterViewInit {
-  protected rangeApplications: IApplication[] | undefined = undefined;
-  protected dataForChart: Record<string, Point[]>;
-  constructor(private chart: ChartService) {
-    this.dataForChart = this.chart.mapApplicationForChart(applications);
+  protected rangeApplications: Record<string, Point[]> = {};
+  protected maxValuesInRange = signal<number>(0);
+  constructor(private chart: ChartService, private cdr: ChangeDetectorRef) {
     this.form = new FormGroup({
-      startTime: new FormControl("21:00"),
-      endTime: new FormControl(""),
-      range: new FormControl(0),
+      endTime: new FormControl("21:00"),
+      range: new FormControl(15),
     });
   }
 
@@ -32,29 +29,40 @@ export class AppComponent implements AfterViewInit {
   }
 
   protected changeControlValue() {
-    this.rangeApplications = [];
+    this.rangeApplications = {};
     const endTime = this.mapTimeFromControls(this.endTimeControl.value);
     const startTime = new Date(endTime);
     startTime.setMinutes(startTime.getMinutes() - this.rangeControl.value);
-    console.log(startTime, endTime); // Функция для получения времени в формате "HH:MM:SS"
+
     const getTimeString = (date: Date): string => {
+      // Функция для получения времени в формате "HH:MM:SS"
       return `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
     };
 
     const startTimeStr = getTimeString(startTime);
     const endTimeStr = getTimeString(endTime);
 
-    this.rangeApplications = applications.filter((app) => {
-      const appTimeStr = getTimeString(new Date(app.time));
-      return appTimeStr >= startTimeStr && appTimeStr <= endTimeStr;
-    });
-
-    console.log("Range:", startTimeStr, "-", endTimeStr, this.rangeApplications);
+    this.rangeApplications = this.chart.mapApplicationForChart(
+      applications.filter((app) => {
+        const appTimeStr = getTimeString(new Date(app.time));
+        return appTimeStr >= startTimeStr && appTimeStr <= endTimeStr;
+      }),
+    );
+    this.getMaxValue();
+    this.cdr.detectChanges();
   }
 
-  private get startTimeControl(): FormControl {
-    return this.form.get("startTime") as FormControl;
+  protected getMaxValue() {
+    const allPoints = Object.values(this.rangeApplications).flat();
+
+  if (!allPoints.length) return;
+
+  const maxV = Math.max(...allPoints.map(p => p.value));
+
+  console.log(maxV, allPoints);
+  this.maxValuesInRange.set(maxV);
   }
+
   private get endTimeControl(): FormControl {
     return this.form.get("endTime") as FormControl;
   }

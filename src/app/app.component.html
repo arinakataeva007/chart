@@ -1,7 +1,6 @@
 <form [formGroup]="form">
-  <input placeholder="StartTime" formControlName="startTime" />
   <input placeholder="EndTime" formControlName="endTime"/>
   <input placeholder="Range" formControlName="range" />
   <button (click)="changeControlValue()">Submit</button>
 </form>
-<app-chart-axes></app-chart-axes>
+<app-chart-axes [points]="rangeApplications!" [maxValueY]="maxValuesInRange()" ></app-chart-axes>

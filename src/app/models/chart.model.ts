@@ -8,6 +8,7 @@ export interface Point {
   value: number;
 }
 export interface PointCoordinate {
+  id: string;
   x: number;
   y: number;
 }

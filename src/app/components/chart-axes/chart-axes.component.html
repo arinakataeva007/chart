@@ -47,7 +47,7 @@
     />
     <!-- Подписи для ключевых меток по оси Y -->
     <text class="text" x="-27" [attr.y]="templateHeight - i + 4">
-      {{ (i / 368) * 50 | number: "1.0-0" }}
+      {{ (i / 368) * maxValueY | number: "1.0-0" }}
     </text>
   </g>
   <g *ngFor="let t of ticks">
@@ -81,7 +81,7 @@
 
     <!-- подписи только для крупных -->
     <text
-      *ngIf="t.isMajor"
+      *ngIf="t.isMajor && t.time && (t.time.getTime()) !== null"
       class="text"
       [attr.y]="height + 27"
       [attr.x]="t.x - 10"
@@ -96,6 +96,7 @@
       [attr.stroke]="colors[i]"
       stroke-width="2"
       fill="none"
+      (click)="clickOnPoint(line)"
     />
     <circle
       class="point"
@@ -104,6 +105,7 @@
       [attr.cy]="p.y"
       [attr.fill]="colors[i]"
       [attr.stroke]="colors[i]"
+      (click)="clickOnPoint(p)"
       r="4"
     />
   </ng-container>
